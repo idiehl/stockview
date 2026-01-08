@@ -1,9 +1,8 @@
-# Tradeview 📈  
-A sleek, Streamlit-based market dashboard + paper trading sandbox with live refresh, watchlists, portfolio analytics, and a lightweight SQLite-backed trade ledger.
+# Tradeview 📈
+
+A polished **Streamlit market dashboard + paper trading sandbox** with watchlists, indicators, portfolio analytics, and a lightweight **SQLite trade ledger**.
 
 > **Disclaimer:** Tradeview is a demo / portfolio project. Quotes are indicative and may be delayed. **Paper trading only. Not investment advice.**
-
-License: MIT
 
 ---
 
@@ -15,115 +14,103 @@ License: MIT
 - [Local setup](#local-setup)
 - [Run the app](#run-the-app)
 - [Deploy on Streamlit Community Cloud](#deploy-on-streamlit-community-cloud)
-- [App tour](#app-tour)
-- [Data providers + rate limits](#data-providers--rate-limits)
+- [App tour (demo flow)](#app-tour-demo-flow)
+- [Metric notes](#metric-notes)
 - [Database + trade ledger](#database--trade-ledger)
+- [Master Log (version history)](#master-log-version-history)
 - [Troubleshooting](#troubleshooting)
-- [Recommended next improvements](#recommended-next-improvements)
 - [License](#license)
 
 ---
 
 ## What this is
-**Tradeview** is a compact "trading terminal"-style dashboard meant to showcase:
-- clean UI layout patterns in Streamlit
-- real market charting (Plotly)
-- a paper trading workflow
-- persistent-ish storage via SQLite
-- live refresh controls and caching strategies
+**Tradeview** is a compact “trading terminal”-style dashboard meant to showcase:
+- clean UI/layout patterns in Streamlit
+- interactive charting (Plotly)
+- a paper trading workflow (orders → ledger → portfolio)
+- credible portfolio analytics (equity curve, drawdown, allocation)
+- resilient market data fetching (timeouts, caching, provider fallback)
 
-It’s designed to be:
-- **fast** (cached requests)
-- **reliable** (fallback data provider)
-- **presentable** (polished, commercial UI language)
+Design goals:
+- **fast** reruns via caching
+- **resilient** to partial provider failures (fault-isolated watchlist rows)
+- **presentable** for a portfolio / social demo
 
 ---
 
 ## Key features
 
-### 🧭 Navigation / Pages
+### 🧭 Pages
 - **🏠 Dashboard**
-  - Primary Symbol “hero” banner
-  - Live chart with bottom-right HUD (LIVE + Play/Pause)
-  - Toolbar below chart: Window / Granularity / Chart + data source label
+  - Primary symbol “hero” banner + chart
+  - Watchlist snapshot (high-signal columns + sparklines)
+  - **Sigma window statistics** (volatility context for the visible chart window)
 - **📊 Markets**
-  - Same layout as Dashboard but with indicators support (SMA / Volume)
+  - Chart + indicators (SMA 20/50, optional volume)
+  - Key Levels panel (day/week/52w high/low + volume)
+  - Sigma window statistics (same as Dashboard)
 - **🧾 Order Entry**
-  - Paper Buy/Sell (Market or Limit)
-  - Quote preview panel
+  - Paper Buy/Sell (market/limit) with basic validation
 - **💼 Portfolio**
-  - Aggregated holdings, market value, and unrealized P&L
+  - Holdings + unrealized P&L
+  - Analytics: equity curve vs benchmark (SPY), drawdown, allocation
 - **🧱 Activity**
-  - Full trade log + CSV export
+  - Trade log + CSV export
 - **⚙️ User Settings**
-  - Theme picker
-  - Market data provider picker (Auto / Yahoo / Stooq)
-  - Diagnostics toggle
-  - Live refresh toggle (1s)
+  - Theme, data provider mode, diagnostics
+  - Live refresh toggle + interval
   - Starting cash + full reset
 
-### 📌 Watchlist sidebar
-- Comma-separated tickers
-- Quick “Use {SYMBOL}” buttons to set the Primary Symbol
-- Optional “Refresh quotes” to populate watchlist prices
-
-### 🔄 Live chart refresh
-- Live refresh is **ON by default**
-- HUD in the chart block allows **Play/Pause** without cluttering the sidebar
-- Uses `streamlit_autorefresh` to rerun every 1 second when live
+### 📌 Sidebar watchlist
+- Comma-separated tickers with quick “Use {SYMBOL}” buttons
+- Manual “Refresh quotes” and “Clear cache” controls
 
 ---
 
 ## Tech stack
 - **Python**
-- **Streamlit** (UI + layout)
-- **Plotly** (interactive charts)
+- **Streamlit** (UI)
+- **Plotly** (charts)
 - **pandas** (data manipulation)
-- **yfinance** (Yahoo market data)
-- **streamlit-autorefresh** (live mode)
-- **SQLite** (paper trades + metadata)
+- **yfinance** (Yahoo Finance market data)
+- **SQLite** (trade ledger: local-only by default)
+- Optional: **streamlit-autorefresh** (live refresh when enabled)
 
 ---
 
 ## How it works
 
-### 1) Market data flow
+### 1) Market data providers (resilient)
 Tradeview attempts to fetch OHLCV data in this order:
-1. **Yahoo Finance (via `yfinance`)**  
+1. **Yahoo Finance** (via `yfinance`)
 2. If Yahoo fails or returns empty data, fallback to **Stooq** (daily bars)
 
-This makes Streamlit Cloud deployments much more stable, since Yahoo can rate-limit or block cloud IP ranges.
+This fallback helps Streamlit Cloud deployments stay stable when Yahoo rate-limits cloud IP ranges.
 
-### 2) Caching strategy
-Market calls are cached so the app stays fast:
-- **History** cached (TTL ~ 20s)
-- **Quote** cached (TTL ~ 2s)
-- **Stooq daily** cached longer (TTL ~ 300s)
+### 2) Caching strategy (fast reruns)
+Remote calls are cached to keep the app snappy:
+- **History**: cached (short TTL)
+- **Quotes**: cached (very short TTL)
+- **Fallback daily** (Stooq): cached longer
 
-There is also a **“Clear cache”** button in the sidebar to wipe cached responses.
+There’s also a **“Clear cache”** button in the sidebar.
 
-### 3) Live mode
-When live mode is enabled:
-- the app triggers a rerun every ~1 second
-- the LIVE timestamp updates
-- history/quote data refreshes according to cache TTLs
-
-The Play/Pause control toggles `st.session_state["live_playing"]`.
+### 3) Live refresh (opt-in)
+Live refresh is **disabled by default** to avoid layout shifting while you interact with the chart.
+Enable it in **User Settings** if you want periodic reruns.
 
 ### 4) Paper trading ledger
-Orders write rows into a SQLite database (`portfolio.db`).  
-Portfolio and P&L are derived from that trade history.
+Orders are recorded into a local SQLite DB (`portfolio.db`). Portfolio and P&L are derived from trade history.
 
 ---
 
 ## Local setup
 
 ### Prerequisites
-- Python **3.10+** recommended (works in newer versions too)
+- Python **3.10+** recommended
 - Git
 
 ### Install dependencies
-From the project directory:
 
 ```bash
 python -m venv .venv
@@ -133,12 +120,11 @@ python -m venv .venv
 source .venv/bin/activate
 
 pip install -r requirements.txt
+```
 
 ---
 
 ## Run the app
-
-From the project directory (with your venv activated):
 
 ```bash
 streamlit run app.py
@@ -146,81 +132,83 @@ streamlit run app.py
 
 ---
 
-## App tour (what to show in a demo)
+## Deploy on Streamlit Community Cloud
 
-### 🏠 Dashboard
-- Primary symbol banner + live chart with Play/Pause HUD
-- **Watchlist snapshot table** (compact): short-term returns, 52-week context, and sparklines
+1. Push this repo to GitHub.
+2. In Streamlit Community Cloud, click **New app** and choose:
+   - **Repository**: your GitHub repo
+   - **Branch**: `main`
+   - **Main file path**: `app.py`
+3. Click **Deploy**.
 
-### 📊 Markets
-- Chart + indicators (SMA 20/50, optional volume)
-- **Sigma Slice Analysis Tool** (new!)
-  - Dual-handle range slider to select any time window
-  - Computes mean, std dev, high/low for the selected slice
-  - Shows current price's sigma distance from the sample
-  - Visual shading on chart for selected region
-  - Supports intraday data (1m, 5m, 15m, 1h) for short-term analysis
-- **Key Levels panel**: Day/Week/52-week highs and lows, volume stats
-- **Watchlist snapshot table** (compact/detailed view)
-  - 1D/1W/1M returns
-  - 52-week high/low + range position
-  - volatility + "sigma distance" to 52-week high/low
-
-### 💼 Portfolio
-- Holdings table (market value + unrealized P&L)
-- **Analytics**
-  - Equity curve built from the SQLite trade ledger + daily closes
-  - Benchmark overlay (SPY buy-and-hold)
-  - Drawdown chart + quick risk stats
-  - Allocation donut chart
+Notes:
+- Streamlit Cloud installs from `requirements.txt`.
+- Streamlit Cloud has an **ephemeral filesystem**. Local files like `portfolio.db` are not durable between restarts/redeploys.
+  - For a portfolio demo, that’s usually fine (it behaves like a “fresh paper account”).
+  - If you want persistence later, you’ll need an external DB or an upload/download mechanism.
 
 ---
 
-## Metric notes (new columns)
+## App tour (demo flow)
 
-### 52-week sigma distance
+### 30–60 second demo script
+- Open **Dashboard** → show clean hero + watchlist snapshot
+- Switch **Window/Granularity** → point out **Sigma window statistics** update with the visible data
+- Go to **Markets** → toggle indicators (SMA/volume) + show Key Levels
+- Go to **Order Entry** → place a small paper BUY
+- Go to **Portfolio** → show holdings + equity curve vs SPY + drawdown
+- Go to **Activity** → export CSV
+
+---
+
+## Metric notes
+
+### 52-week sigma distance (watchlist)
 In the watchlist table:
-
 - **σ To High**: \((Last - 52WHigh) / σ_{usd,252}\)
 - **σ To Low**: \((Last - 52WLow) / σ_{usd,252}\)
-- **\(σ_{usd,252}\)** is approximated as: \(Last × stdev(daily pct returns, 252 sessions)\)
+- \(σ_{usd,252}\) is approximated as: \(Last × stdev(daily pct returns, 252 sessions)\)
 
-This makes the distance "unitless" (in sigmas) while still tying volatility to the current price level.
-
-### Sigma Slice Analysis
-The Sigma Slice tool on the Markets page lets you:
-
-1. **Select any time range**: Use the dual-handle slider to pick start and end points
-2. **Analyze historical volatility**: See mean, std dev, high/low for that specific window
-3. **Measure current price distance**: How many sigmas is the current price from the sample mean/high/low?
-
-This is useful for:
-- Comparing current price to a specific historical period (e.g., "How does today's price compare to last month's range?")
-- Identifying when price has moved significantly from a baseline
-- Analyzing volatility across different timeframes (intraday to yearly)
-
-**Intraday data limits** (Yahoo Finance):
-- 1m: ~7 days
-- 5m/15m: ~60 days
-- 1h: ~730 days
+### Sigma window statistics (Dashboard/Markets)
+Tradeview also displays “window statistics” for the *currently visible chart window* (based on your selected Window + Granularity):
+- mean price, standard deviation, high/low, and where the current price sits relative to that distribution
 
 ---
 
-## Demo script (30–60 seconds)
-- Open **Dashboard** → toggle Live mode → show chart HUD and source label
-- Show **Watchlist snapshot** → point out 52-week context + sparklines
-- Go to **Markets** → demo the **Sigma Slice** tool:
-  - Select a short intraday interval (e.g., 5m)
-  - Drag the slider handles to select a historical window
-  - Show the shaded region on the chart and sigma stats panel
-- Go to **Order Entry** → place a small paper BUY
-- Go to **Portfolio** → show holdings update and equity curve vs SPY
-- Go to **Activity** → export CSV
+## Database + trade ledger
+- Local ledger file: `portfolio.db` (created automatically if missing)
+- Reset behavior: use **User Settings → Reset** to clear trades / restore starting cash
+
+Streamlit Cloud note: the local DB is not durable across restarts. For hosted persistence, use an external DB.
+
 ---
 
-## Recommended next improvements
-- Add a “details drawer” for a selected row in the watchlist table (news, fundamentals, key ratios)
-- Add position sizing helpers (risk-based sizing, max % of portfolio)
-- Add import/export of `portfolio.db` or a “sample trades” seed
-- Add per-symbol caching diagnostics (last fetch time, cache hits)
-- Add test coverage for the analytics helpers (pure functions)
+## Master Log (version history)
+This repo keeps a running version history:
+- Source: `docs/master_log/Master_Log.md`
+- Rendered: `docs/master_log/Master_Log.pdf`
+
+Build the PDF:
+- Windows (PowerShell):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/build_master_log.ps1
+```
+
+- Linux/macOS (bash):
+
+```bash
+bash scripts/build_master_log.sh
+```
+
+---
+
+## Troubleshooting
+- **Yahoo returns empty / rate-limited**: try Provider Mode **Auto** or **Stooq** (daily only).
+- **Chart seems stale**: use **Refresh quotes** or **Clear cache** in the sidebar.
+- **Weird local state**: restart Streamlit; then Clear cache.
+
+---
+
+## License
+MIT

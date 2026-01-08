@@ -12,6 +12,7 @@
 - [SV-C01-20260106-001] — Watchlist sigma metrics + portfolio analytics
 - [SV-C01-20260106-002] — Rebrand to Tradeview + UI polish
 - [SV-C01-20260106-003] — Sigma Slice Analysis Tool
+- [SV-C01-20260108-001] — README refresh + deploy hygiene
 
 ---
 
@@ -87,3 +88,15 @@
 - Edge cases handled (empty slice, insufficient data)  
 **Notes:** Sigma calculations use price std dev (not returns std dev) for the slice, making it directly comparable to price distances. For returns-based volatility, see the 52-week metrics in the watchlist.  
 **Concepts:** @concept:sigma-slice @concept:intraday-data @concept:volatility-analysis
+
+## SV-C01-20260108-001 — README refresh + deploy hygiene
+
+**Type:** Docs / Fix  
+**Context:** Final polish before publishing; align documentation with current UX and keep local data out of GitHub/Streamlit Cloud.  
+**Change summary:** Updated README to match the current app behavior (live refresh is opt-in, no chart HUD overlay, sigma stats tied to visible window); removed the “Recommended next improvements” section; added `.gitignore` rules to exclude local DB and dev artifacts (including `portfolio.db`).  
+**Rationale / tradeoffs:** Keeping the README accurate improves credibility for a portfolio demo. Git-ignoring the local SQLite ledger avoids accidentally publishing personal paper-trading activity and matches Streamlit Cloud’s ephemeral filesystem model.  
+**Files touched:** `README.md`, `.gitignore`, `docs/master_log/Master_Log.md`, `docs/master_log/Master_Log.pdf`  
+**Commands run:** `powershell -ExecutionPolicy Bypass -File scripts/build_master_log.ps1`  
+**Verification:** Confirmed README no longer references removed UI elements; verified master log PDF rebuilt successfully.  
+**Notes:** Streamlit Community Cloud doesn’t provide durable local disk; if persistence is desired later, use an external DB or add import/export.  
+**Concepts:** @concept:deploy-hygiene @concept:docs @concept:paper-ledger
