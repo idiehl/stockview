@@ -1,0 +1,6 @@
+echo "__pycache__/
+.venv/
+*.pyc
+portfolio.db
+.DS_Store
+" > .gitignore

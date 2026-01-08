@@ -1,0 +1,59 @@
+---
+description: "Stockview (Cashbook Lite): Streamlit + Plotly + SQLite paper trading dashboard rules."
+globs:
+  - **/*.py
+  - **/*.md
+  - **/requirements.txt
+  - **/*.db
+alwaysApply: true
+---
+
+# Stockview (Cashbook Lite) — Project Rules
+
+## Context
+This is a **Streamlit market dashboard + paper trading sandbox**:
+- Streamlit UI with multiple pages (Dashboard / Markets / Order Entry / Portfolio / Activity / User Settings)
+- Market data via providers like Yahoo (yfinance) and possibly others
+- Charts via Plotly
+- Persistence via a lightweight **SQLite trade ledger** (`portfolio.db`)
+
+**Non-goal:** real-money trading. Keep the “paper trading / demo / not investment advice” framing intact in UI + docs.
+
+## Hard requirements
+- Keep the app **fast on reruns**:
+  - Use `st.cache_data` for dataframes and quote/history fetches.
+  - Use `st.cache_resource` only for shared resources (e.g., long-lived clients/executors).
+  - Every remote call must have a timeout + graceful fallback (no hard crashes).
+- Preserve safety + resilience patterns already in the codebase:
+  - ticker sanitization / validation
+  - watchlist size limits
+  - provider “Auto / Yahoo / …” mode behavior
+- SQLite is intentionally simple:
+  - If changing schema, add **backward-compatible migrations**.
+  - Never silently corrupt or overwrite existing `portfolio.db`.
+  - Prefer “additive” schema changes + a tiny migration helper.
+- UI rules:
+  - Keep navigation labels and page purpose stable unless asked.
+  - Preserve theme/CSS injection patterns and avoid breaking layout.
+  - Keep refresh/auto-refresh behind an explicit toggle.
+
+## Coding conventions
+- Split large new functionality into small pure functions to keep logic testable.
+- Never introduce heavy dependencies without a clear benefit (this repo should stay light).
+- When adding a new page/feature:
+  - add it to the sidebar nav
+  - update the README with “what it does” + “how to run”
+  - add a small QA checklist (happy path + bad input)
+
+## Quick QA checklist (every change)
+- App boots: `streamlit run app.py`
+- Navigate each page without exceptions
+- Watchlist quotes render even when one symbol fails
+- A trade can be recorded and shows up in Activity
+- Clearing cache doesn’t break state
+
+
+## Master Log (required)
+- Keep a running version-history log in `docs/master_log/Master_Log.md` (source of truth) and regenerate `docs/master_log/Master_Log.pdf` after updates.
+- Every meaningful change (feature, fix, refactor, direction change, decision) must add a new entry using the global Log ID format.
+- Use project slug `SV` in Log IDs (e.g., `SV-C01-YYYYMMDD-001`).
