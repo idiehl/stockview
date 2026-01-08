@@ -14,6 +14,7 @@
 - [SV-C01-20260106-003] — Sigma Slice Analysis Tool
 - [SV-C01-20260108-001] — README refresh + deploy hygiene
 - [SV-C01-20260108-002] — Add README demo video link
+- [SV-C01-20260108-003] — Add README live Streamlit link
 
 ---
 
@@ -113,3 +114,15 @@
 **Verification:** Confirmed the thumbnail renders in GitHub Markdown and opens the YouTube URL when clicked.  
 **Notes:** If the thumbnail is too large for fast loading, consider replacing it with a smaller JPG/PNG export (same aspect ratio).  
 **Concepts:** @concept:demo-video @concept:docs
+
+## SV-C01-20260108-003 — Add README live Streamlit link
+
+**Type:** Docs  
+**Context:** Improve discoverability by letting viewers jump straight into the hosted app.  
+**Change summary:** Added the Streamlit Community Cloud URL to the README so readers can open the live deployment from the repo landing page.  
+**Rationale / tradeoffs:** A simple hyperlink is the most compatible way to advertise the live demo across GitHub clients and mobile.  
+**Files touched:** `README.md`, `docs/master_log/Master_Log.md`, `docs/master_log/Master_Log.pdf`  
+**Commands run:** `powershell -ExecutionPolicy Bypass -File scripts/build_master_log.ps1`  
+**Verification:** Link opens the deployed app.  
+**Notes:** None.  
+**Concepts:** @concept:live-demo @concept:docs

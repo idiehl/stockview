@@ -30,6 +30,8 @@ A polished **Streamlit market dashboard + paper trading sandbox** with watchlist
 
 Watch on YouTube: `https://youtu.be/_ikvd5eztsE`
 
+Live app (Streamlit): `https://stockview-v1.streamlit.app/`
+
 ---
 
 ## What this is
