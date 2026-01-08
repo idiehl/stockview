@@ -14,12 +14,12 @@ from streamlit_autorefresh import st_autorefresh
 # CONFIG
 # =========================================================
 st.set_page_config(
-    page_title="Tradeview",
+    page_title="Stockview",
     page_icon="📈",
     layout="wide",
 )
 
-APP_NAME = "Tradeview"
+APP_NAME = "Stockview"
 APP_TAGLINE = "Market monitor • Paper trading • Portfolio analytics"
 DB_PATH = "portfolio.db"
 
@@ -1264,7 +1264,7 @@ if "watch_quotes" not in st.session_state:
 
 # Sidebar
 with st.sidebar:
-    st.header("Tradeview")
+    st.header("Stockview")
 
     page = st.radio(
         "Navigation",

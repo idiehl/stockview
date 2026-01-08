@@ -15,6 +15,7 @@
 - [SV-C01-20260108-001] — README refresh + deploy hygiene
 - [SV-C01-20260108-002] — Add README demo video link
 - [SV-C01-20260108-003] — Add README live Streamlit link
+- [SV-C01-20260108-004] — Update in-app headings to Stockview
 
 ---
 
@@ -126,3 +127,15 @@
 **Verification:** Link opens the deployed app.  
 **Notes:** None.  
 **Concepts:** @concept:live-demo @concept:docs
+
+## SV-C01-20260108-004 — Update in-app headings to Stockview
+
+**Type:** Fix / Refactor  
+**Context:** User requested aligning the visible in-app page headings/branding with “Stockview”.  
+**Change summary:** Updated the Streamlit page title and header branding from “Tradeview” to “Stockview” so the top-of-page headings reflect the desired name across pages.  
+**Rationale / tradeoffs:** Keeps the UI consistent with the project name you’re publishing; minimal change, no behavior impact.  
+**Files touched:** `app.py`, `docs/master_log/Master_Log.md`, `docs/master_log/Master_Log.pdf`  
+**Commands run:** `powershell -ExecutionPolicy Bypass -File scripts/build_master_log.ps1`  
+**Verification:** App loads with “Stockview” in the page header/title area.  
+**Notes:** README still uses “Tradeview” unless you want that renamed too.  
+**Concepts:** @concept:branding
