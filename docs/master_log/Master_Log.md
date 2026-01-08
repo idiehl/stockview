@@ -13,6 +13,7 @@
 - [SV-C01-20260106-002] — Rebrand to Tradeview + UI polish
 - [SV-C01-20260106-003] — Sigma Slice Analysis Tool
 - [SV-C01-20260108-001] — README refresh + deploy hygiene
+- [SV-C01-20260108-002] — Add README demo video link
 
 ---
 
@@ -100,3 +101,15 @@
 **Verification:** Confirmed README no longer references removed UI elements; verified master log PDF rebuilt successfully.  
 **Notes:** Streamlit Community Cloud doesn’t provide durable local disk; if persistence is desired later, use an external DB or add import/export.  
 **Concepts:** @concept:deploy-hygiene @concept:docs @concept:paper-ledger
+
+## SV-C01-20260108-002 — Add README demo video link
+
+**Type:** Docs  
+**Context:** Improve portfolio presentation and make the repo self-explanatory for first-time viewers.  
+**Change summary:** Added a “Demo video” section to the README with a clickable thumbnail that links to the YouTube walkthrough.  
+**Rationale / tradeoffs:** GitHub READMEs don’t reliably render inline video players; a thumbnail link is the most compatible, low-friction way to showcase the app.  
+**Files touched:** `README.md`, `docs/master_log/Master_Log.md`, `docs/master_log/Master_Log.pdf`  
+**Commands run:** `powershell -ExecutionPolicy Bypass -File scripts/build_master_log.ps1`  
+**Verification:** Confirmed the thumbnail renders in GitHub Markdown and opens the YouTube URL when clicked.  
+**Notes:** If the thumbnail is too large for fast loading, consider replacing it with a smaller JPG/PNG export (same aspect ratio).  
+**Concepts:** @concept:demo-video @concept:docs

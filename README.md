@@ -8,6 +8,7 @@ A polished **Streamlit market dashboard + paper trading sandbox** with watchlist
 
 ## Table of Contents
 - [What this is](#what-this-is)
+- [Demo video](#demo-video)
 - [Key features](#key-features)
 - [Tech stack](#tech-stack)
 - [How it works](#how-it-works)
@@ -20,6 +21,14 @@ A polished **Streamlit market dashboard + paper trading sandbox** with watchlist
 - [Master Log (version history)](#master-log-version-history)
 - [Troubleshooting](#troubleshooting)
 - [License](#license)
+
+---
+
+## Demo video
+
+[![Tradeview demo video](docs/media/thumbnail.png)](https://youtu.be/_ikvd5eztsE)
+
+Watch on YouTube: `https://youtu.be/_ikvd5eztsE`
 
 ---
 

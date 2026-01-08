@@ -24,6 +24,9 @@ portfolio.db
 *.sqlite
 *.sqlite3
 
+# Large media (prefer YouTube/Release assets)
+*.mp4
+
 echo "__pycache__/
 .venv/
 *.pyc
